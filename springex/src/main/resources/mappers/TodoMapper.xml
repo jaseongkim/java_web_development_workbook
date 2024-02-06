@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zerock.springex.mapper.TodoMapper">
+    
+    <sql id="search">
+        <where>
+            <if test="types != null and types.length > 0">
+                <foreach collection="types" item="type" open="(" close=")" separator="OR">
+                    <if test="type == 't'.toString()">
+                        title like '%'||#{keyword}||'%'
+                    </if>
+                    <if test="type == 'w'.toString()">
+                        writer like '%'||#{keyword}||'%'
+                    </if>
+                </foreach>
+            </if>
+            <if test="finished">
+                <trim prefix="and">
+                    finished = 1
+                </trim>
+            </if>
+            <if test="from != null and to != null">
+                <trim prefix="and">
+                    dueDate between #{from} and #{to}
+                </trim>
+            </if>
+        </where>
+    </sql>
+    
+    <select id="getTime" resultType="string">
+        SELECT SYSDATE FROM DUAL
+    </select>
+
+    <insert id="insert">
+        insert into tbl_todo2 (title, dueDate, writer) values (#{title}, #{dueDate}, #{writer})
+    </insert>
+
+    <select id="selectAll" resultType="org.zerock.springex.domain.TodoVO">
+        SELECT * FROM TBL_TODO2 ORDER BY TNO DESC
+    </select>
+
+    <select id="selectOne" resultType="org.zerock.springex.domain.TodoVO">
+        SELECT * FROM TBL_TODO2 WHERE TNO = #{tno}
+    </select>
+
+    <delete id="delete">
+        DELETE FROM TBL_TODO2 WHERE TNO = #{tno}
+    </delete>
+
+    <update id="update">
+        UPDATE TBL_TODO2 SET TITLE=#{title}, DUEDATE=#{dueDate}, FINISHED=#{finished} WHERE TNO = #{tno}
+    </update>
+
+    <select id="selectList" resultType="org.zerock.springex.domain.TodoVO">
+        SELECT *
+        FROM ( SELECT ROWNUM RN, F.*
+        FROM ( SELECT *
+        FROM TBL_TODO2
+        <include refid="search"></include>
+        ORDER BY TNO DESC
+        )F
+        )
+        WHERE RN BETWEEN #{skip} AND #{size}
+    </select>
+
+    <select id="getCount" resultType="int">
+        SELECT COUNT(tno) FROM TBL_TODO2
+        <include refid="search"></include>
+    </select>
+
+
+</mapper>

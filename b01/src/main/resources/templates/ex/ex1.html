@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h4>[[${list}]]</h4>
+<hr/>
+<h4 th:text="${list}"></h4>
+
+<div th:with="num1=${10}, num2=${20}">
+    <h1 th:text="${num1 + num2}"></h1>
+</div>
+
+<ul>
+    <li th:each="str, status: ${list}">
+        [[${status.index}]] -- [[${str}]]
+    </li>
+</ul>
+<ul>
+    <th:block th:each="str : ${list}">
+        <li>[[${str}]]</li>
+    </th:block>
+</ul>
+
+
+<ul>
+    <li th:each="str, status : ${list}">
+        <span th:if="${status.odd}">ODD -- [[${str}]]</span>
+        <span th:unless="${status.odd}">EVEN -- [[${str}]]</span>
+    </li>
+</ul>
+
+<ul>
+    <li th:each="str, status : ${list}">
+        <span th:text="${status.odd} ? 'ODD ----'+ ${str} : 'EVEN'"></span>
+    </li>
+</ul>
+
+<a th:href="@{/hello(types=${ {'aa','bb','cc'} } , age = 16)}"> GO TO /hello</a>
+
+</body>
+</html>
